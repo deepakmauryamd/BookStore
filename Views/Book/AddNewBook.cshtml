@@ -4,7 +4,7 @@
 }
 
 <div class="container col-md-6">
-    @if(ViewBag.isSuccess)
+    @if(ViewBag.isSuccess == true)
     {
         <div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
             <strong>Congratulations!!</strong> New book is added successfully.<br/>
@@ -16,22 +16,26 @@
     }
 
     <h3 class="display-4">Add new book</h3>
+    <p class="text-muted">* fields are required</p>
     <form asp-action="AddNewBook">
         <div class="form-group">
-            <label asp-for="Title"></label>
-            <input asp-for="Title" class="form-control"/>
+            <label asp-for="Title"></label><span>*</span>
+            <input asp-for="Title" class="form-control" required/>
+            <span class="text-danger" asp-validation-for="Title"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Author"></label>
-            <input asp-for="Author" class="form-control"/>
+            <label asp-for="Author"></label><span>*</span>
+            <input asp-for="Author" class="form-control" required/>
+            <span class="text-danger" asp-validation-for="Author"></span>
         </div> 
         <div class="form-group">
             <label asp-for="Description"></label>
             <textarea asp-for="Description" class="form-control"></textarea>
         </div> 
         <div class="form-group">
-            <label asp-for="TotalPages"></label>
-            <input asp-for="TotalPages" class="form-control"/>
+            <label asp-for="TotalPages"></label><span>*</span>
+            <input asp-for="TotalPages" class="form-control" required/>
+            <span class="text-danger" asp-validation-for="TotalPages"></span>
         </div> 
         <div class="form-group">
             <input type="submit"  value="Add book" class="btn btn-primary"/>
