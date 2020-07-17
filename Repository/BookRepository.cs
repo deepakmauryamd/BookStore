@@ -19,14 +19,27 @@ namespace BookStore.Repository
 
         public async Task<int> AddNewBook(BookModel model)
         {
-            var newBook = new Books(){
+            var newBook = new Books()
+            {
                 Author = model.Author,
                 CreatedOn = DateTime.UtcNow,
-                Description  = model.Description,
+                Description = model.Description,
                 Title = model.Title,
+                LanguageId = model.LanguageId,
                 TotalPages = model.TotalPages.HasValue ? model.TotalPages.Value : 0,
-                UpdatedOn = DateTime.UtcNow
-            };  
+                UpdatedOn = DateTime.UtcNow,
+                CoverImageUrl = model.CoverImageUrl,
+                BookPdfUrl = model.BookPdfUrl
+            };
+
+            newBook.bookGalary = new List<BookGalary>();
+            foreach(var image in model.Galary)
+            {
+                newBook.bookGalary.Add(new BookGalary{
+                    Url = image.Url,
+                    Name = image.Name
+                });
+            }
 
             await _context.Books.AddAsync(newBook);
             await _context.SaveChangesAsync();
@@ -35,56 +48,44 @@ namespace BookStore.Repository
         }
         public async Task<List<BookModel>> GetAllBook()
         {
-            List<BookModel> books = null;
-            var allbooks = await _context.Books.ToListAsync();
-            if(allbooks?.Any() == true)
-            {
-                books = new List<BookModel>();
-                foreach(var book in allbooks)
+            var allbooks = await _context.Books.Select(
+                book => new BookModel()
                 {
-                    books.Add(new BookModel{
-                        Id = book.Id,
-                        Title = book.Title,
-                        Description = book.Description,
-                        TotalPages = book.TotalPages,
-                        Author = book.Author 
-                    });
-                }
-            }
+                    Id = book.Id,
+                    Title = book.Title,
+                    Description = book.Description,
+                    TotalPages = book.TotalPages,
+                    LanguageId = book.LanguageId,
+                    Language = book.Language.Name,
+                    Author = book.Author,
+                    CoverImageUrl = book.CoverImageUrl
+                }).ToListAsync();
 
-            return books;
+            return allbooks;
         }
         public async Task<BookModel> GetBookById(int id)
         {
-            BookModel bookDetails = null;
-            var book = await _context.Books.FindAsync(id);
-            if(book != null)
-            {
-                bookDetails = new BookModel{
+            return await _context.Books.Where(x => x.Id == id)
+                .Select(book => new BookModel
+                {
                     Id = book.Id,
                     Title = book.Title,
                     Description = book.Description,
                     Author = book.Author,
-                    TotalPages = book.TotalPages
-                };
-            }
-            return bookDetails;
+                    LanguageId = book.LanguageId,
+                    Language = book.Language.Name,
+                    TotalPages = book.TotalPages,
+                    Galary =  book.bookGalary.Select(galary => new GalaryModel{
+                        Name= galary.Name,
+                        Url = galary.Url
+                    }).ToList(),
+                    BookPdfUrl = book.BookPdfUrl
+                }).FirstOrDefaultAsync();
+
         }
         public List<BookModel> SearchBook(string name, string authorName)
         {
-            return DataSource().Where(x => x.Title.Contains(name) && x.Author.Contains(authorName)).ToList();
-        }
-
-        private List<BookModel> DataSource()
-        {
-            return new List<BookModel>
-            {
-                new BookModel{ Id=1, Title="MVC", Author="Deepak" , Description="This is description for book MVC", Category="Programming", TotalPages=1342, Language="English"},
-                new BookModel{ Id=2, Title="Java", Author="Nithis" , Description="This is description for book Java" , Category="Coding", TotalPages=4342, Language="English"},
-                new BookModel{ Id=3, Title="JavaScript", Author="Nilesh" , Description="This is description for book Javascript" , Category="Web", TotalPages=1542, Language="English"},
-                new BookModel{ Id=4, Title="Dotnet", Author="Deepak" , Description="This is description for book Dotnet" , Category="Framework", TotalPages=1312, Language="English"},
-                new BookModel{ Id=5, Title="PHP", Author="Someone" , Description="This is description for book PHP", Category="Programming", TotalPages=2313, Language="English"}
-            };
+            return null;
         }
     }
 }
