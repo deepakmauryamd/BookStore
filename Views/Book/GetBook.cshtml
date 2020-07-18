@@ -1,11 +1,17 @@
-@model BookModel;
+@using BookStore.ViewModels;
+@model BookVM;
 @{
-    @if(@Model != null){
-        ViewData["Title"] = @Model.Title;
+    BookModel book = null;
+    IEnumerable<BookModel> similarBooks = null;
+
+    @if(@Model != null && @Model.book != null){
+        ViewData["Title"] = @Model.book.Title;
+        book = Model.book;
+        similarBooks = Model.similarBooks;
     }
 }
 <div class="container">
-    @if(@Model != null)
+    @if(@book != null)
     {
         <div class="section mt-5 mb-5">
             <h3 class="display-4">Book Details</h3>
@@ -13,17 +19,17 @@
                 <div class="col-md-6">
                     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                         <ol class="carousel-indicators">
-                            @for(int i=0; i < Model.Galary.Count; i++)
+                            @for(int i=0; i < book.Galary.Count; i++)
                             {
                                 <li data-target="#carouselExampleIndicators" data-slide-to="@i" class="@(i==0 ?"active":"")"></li>
                             }
                             
                         </ol>
                         <div class="carousel-inner">
-                             @for(int i=0; i < Model.Galary.Count; i++)
+                             @for(int i=0; i < book.Galary.Count; i++)
                             {
                                 <div class=" @(i==0?"carousel-item active":"carousel-item") ">
-                                    <img asp-append-version="true" src="@Model.Galary[i].Url" height="400" class="d-block w-100" alt="book">
+                                    <img asp-append-version="true" src="@book.Galary[i].Url" height="400" class="d-block w-100" alt="book">
                                 </div>
                             }
                         </div>
@@ -40,18 +46,18 @@
                 <div class="col-md-6">
                     <div class="row">
                         <div class="col-md-12">
-                            <h1>@Model.Title</h1>
+                            <h1>@book.Title</h1>
                         </div>
                     </div> 
                     <div class="row">
                         <div class="col-md-12">
                             <span class="label">By:</span>
-                            <span class="text-monospace">@Model.Author</span>
+                            <span class="text-monospace">@book.Author</span>
                         </div>
                     </div> 
                     <div class="row">
                         <div class="col-md-12">
-                            <p class="description">@Model.Description</p>
+                            <p class="description">@book.Description</p>
                         </div>
                     </div> 
                     <div class="row">
@@ -61,53 +67,49 @@
                     </div> 
                     <hr/>
                     <ul class="list-group">
-                        <li class="list-group-item"><span class="font-weight-bold">Category - </span>@Model.Category</li>
-                        <li class="list-group-item"><span class="font-weight-bold">Total Pages - </span>@Model.TotalPages</li>
-                        <li class="list-group-item"><span class="font-weight-bold">Language - </span>@Model.Language</li>
+                        <li class="list-group-item"><span class="font-weight-bold">Category - </span>@book.Category</li>
+                        <li class="list-group-item"><span class="font-weight-bold">Total Pages - </span>@book.TotalPages</li>
+                        <li class="list-group-item"><span class="font-weight-bold">Language - </span>@book.Language</li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="section mt-5 mb-5">
-            <h3 class="display-4">Similar books</h3>
-            <div class="row">
-                @for (int i=0; i<5;i++)
-                {
-                    <div class="col-md-4">
-                        <div class="card mb-4 shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" 
-                                preserveAspectRatio="xMidYMid slice" focusable="false" role="img" 
-                                aria-label="Placeholder: Thumbnail">
-                                <title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
-                            </svg>
-                            <div class="card-body">
-                                <h3 class="card-title">book.Title</h3>
-                                <p class="card-text">book.Description</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a asp-controller="book" asp-action="getbook" asp-route-id="book.Id" class="btn btn-outline-secondary">View Details</a>
-                                    <small class="text-muted">book.Author</small>
+        @if(similarBooks != null && similarBooks.Any())
+        {
+            <div class="section mt-5 mb-5">
+                <h3 class="display-4">Similar books</h3>
+                <div class="row">
+                   @foreach (var similarBook in similarBooks)
+                    {
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-sm">
+                                <img src="@similarBook.CoverImageUrl" alt="@similarBook.CoverImageUrl" class="img-thumbnail"/>
+                                <div class="card-body">
+                                    <h3 class="card-title">@similarBook.Title</h3>
+                                    <p class="card-text">@similarBook.Description...</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a asp-controller="book" asp-action="getbook" asp-route-id="@similarBook.Id" class="btn btn-outline-secondary">View Details</a>
+                                        <small class="text-muted">@similarBook.Author</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
-        </div>
+        }
 
         <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">@Model.Title</h5>
+                        <h5 class="modal-title" id="exampleModalLongTitle">@book.Title</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                       <embed src="@Model.BookPdfUrl" class="w-100"></embed>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div class="modal-body tall-body">
+                       <embed src="@book.BookPdfUrl" class="w-100 tall"></embed>
                     </div>
                 </div>
             </div>

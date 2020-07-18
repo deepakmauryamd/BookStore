@@ -6,6 +6,12 @@ html{
     width:50px;
     height:50px;
 }
+.tall-body{
+    height:85vh;
+}
+.tall{
+    height:80vh;
+}
 .footer{
     position: absolute;
     bottom: 0;

@@ -29,7 +29,8 @@ namespace BookStore.Repository
                 TotalPages = model.TotalPages.HasValue ? model.TotalPages.Value : 0,
                 UpdatedOn = DateTime.UtcNow,
                 CoverImageUrl = model.CoverImageUrl,
-                BookPdfUrl = model.BookPdfUrl
+                BookPdfUrl = model.BookPdfUrl,
+                CategoryId = model.CategoryId
             };
 
             newBook.bookGalary = new List<BookGalary>();
@@ -53,10 +54,12 @@ namespace BookStore.Repository
                 {
                     Id = book.Id,
                     Title = book.Title,
-                    Description = book.Description,
+                    Description = book.Description.Substring(0, 80),
                     TotalPages = book.TotalPages,
                     LanguageId = book.LanguageId,
                     Language = book.Language.Name,
+                    CategoryId = book.CategoryId,
+                    Category = book.Category.Name,
                     Author = book.Author,
                     CoverImageUrl = book.CoverImageUrl
                 }).ToListAsync();
@@ -74,6 +77,8 @@ namespace BookStore.Repository
                     Author = book.Author,
                     LanguageId = book.LanguageId,
                     Language = book.Language.Name,
+                    CategoryId = book.CategoryId,
+                    Category = book.Category.Name,
                     TotalPages = book.TotalPages,
                     Galary =  book.bookGalary.Select(galary => new GalaryModel{
                         Name= galary.Name,
@@ -81,11 +86,27 @@ namespace BookStore.Repository
                     }).ToList(),
                     BookPdfUrl = book.BookPdfUrl
                 }).FirstOrDefaultAsync();
-
         }
         public List<BookModel> SearchBook(string name, string authorName)
         {
             return null;
+        }
+
+        public async Task<List<BookModel>> GetSimilarBook(int categoryId, int bookId)
+        {
+            return await _context.Books.Where(book => book.CategoryId == categoryId && book.Id != bookId)
+                        .Select(book => new BookModel{
+                            Id = book.Id,
+                            Title = book.Title,
+                            Description = book.Description.Substring(0, 80),
+                            TotalPages = book.TotalPages,
+                            LanguageId = book.LanguageId,
+                            Language = book.Language.Name,
+                            CategoryId = book.CategoryId,
+                            Category = book.Category.Name,
+                            Author = book.Author,
+                            CoverImageUrl = book.CoverImageUrl
+                        }).ToListAsync();
         }
     }
 }

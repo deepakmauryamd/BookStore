@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System;
 using Microsoft.AspNetCore.Http;
+using BookStore.ViewModels;
 
 namespace BookStore.Controllers
 {
@@ -15,12 +16,16 @@ namespace BookStore.Controllers
     {
         private readonly BookRepository _bookRepository = null;
         private readonly LanguageRepository _languageRepository = null;
+        private readonly CategoryRepository _categoryRepository = null;
 
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BookController(BookRepository bookRepository, LanguageRepository languageRepository, IWebHostEnvironment webHostEnvironment)
+        public BookController(BookRepository bookRepository,
+        LanguageRepository languageRepository, IWebHostEnvironment webHostEnvironment,
+        CategoryRepository categoryRepository)
         {
             _bookRepository = bookRepository;
+            _categoryRepository = categoryRepository;
             _languageRepository = languageRepository;
             _webHostEnvironment = webHostEnvironment;
         }
@@ -32,8 +37,13 @@ namespace BookStore.Controllers
         }
         public async Task<ViewResult> GetBook(int id)
         {
-            var data = await _bookRepository.GetBookById(id);
-            return View(data);
+            var bookVM = new BookVM();
+            bookVM.book = await _bookRepository.GetBookById(id);
+            if (bookVM.book != null)
+            {
+                bookVM.similarBooks = await _bookRepository.GetSimilarBook(bookVM.book.CategoryId, bookVM.book.Id);
+            }
+            return View(bookVM);
         }
 
         public List<BookModel> Search(string bookName, string authorName)
@@ -43,6 +53,8 @@ namespace BookStore.Controllers
 
         public async Task<ViewResult> AddNewBook(bool isSuccess = false, int bookId = 0)
         {
+
+            ViewBag.categories = new SelectList(await _categoryRepository.GetAllCategories(), "Id", "Name");
 
             ViewBag.languages = new SelectList(await _languageRepository.GetLanguages(), "Id", "Name");
 
@@ -67,12 +79,13 @@ namespace BookStore.Controllers
                 if (bookModel.GalaryImages != null)
                 {
                     string path = "books/galary/";
-                    
-                    bookModel.Galary = new List<GalaryModel>(); 
+
+                    bookModel.Galary = new List<GalaryModel>();
 
                     foreach (var image in bookModel.GalaryImages)
                     {
-                        var galary = new GalaryModel{
+                        var galary = new GalaryModel
+                        {
                             Name = image.FileName,
                             Url = await UploadFile(path, image)
                         };
@@ -93,6 +106,7 @@ namespace BookStore.Controllers
                     new { isSuccess = true, bookId = id });
                 }
             }
+
             ViewBag.languages = new SelectList(await _languageRepository.GetLanguages(), "Id", "Name");
 
             return View();

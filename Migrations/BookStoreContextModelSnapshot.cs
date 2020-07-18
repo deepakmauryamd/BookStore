@@ -51,8 +51,8 @@ namespace BookStore.Migrations
                     b.Property<string>("BookPdfUrl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("CoverImageUrl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -77,9 +77,28 @@ namespace BookStore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("LanguageId");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("BookStore.Data.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("BookStore.Data.Language", b =>
@@ -110,6 +129,12 @@ namespace BookStore.Migrations
 
             modelBuilder.Entity("BookStore.Data.Books", b =>
                 {
+                    b.HasOne("BookStore.Data.Category", "Category")
+                        .WithMany("Books")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BookStore.Data.Language", "Language")
                         .WithMany("Books")
                         .HasForeignKey("LanguageId")

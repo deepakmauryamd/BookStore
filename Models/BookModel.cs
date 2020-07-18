@@ -17,21 +17,19 @@ namespace BookStore.Models
 
         public string Description { get; set; }
 
+        [Display(Name="Select category of book")]
+        public int CategoryId { get; set; }
         public string Category { get; set; }
 
         [Display(Name="Select language of book")]
         public int LanguageId { get; set; }
-
         public string Language { get; set; }
 
         [Display(Name = "Total pages")]
         [Required(ErrorMessage = "Total pages of book is required.")]
         public uint? TotalPages { get; set; }
-
         public DateTime? CreatedOn { get; set; }
-
         public DateTime? UpdatedOn { get; set; }
-
         [Display(Name="Cover photo of book")]
         [Required]
         public IFormFile CoverPhoto {get; set; }

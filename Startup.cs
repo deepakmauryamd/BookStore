@@ -21,8 +21,9 @@ namespace BookStore
             services.AddDbContext<BookStoreContext>();
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddScoped<BookRepository,BookRepository>();
-            services.AddScoped<LanguageRepository,LanguageRepository>();
+            services.AddScoped<BookRepository, BookRepository>();
+            services.AddScoped<LanguageRepository, LanguageRepository>();
+            services.AddScoped<CategoryRepository, CategoryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
