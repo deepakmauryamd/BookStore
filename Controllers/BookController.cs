@@ -29,12 +29,15 @@ namespace BookStore.Controllers
             _languageRepository = languageRepository;
             _webHostEnvironment = webHostEnvironment;
         }
+
+        [Route("getallbooks")]
         public async Task<ViewResult> GetAllBooks()
         {
             var data = await _bookRepository.GetAllBook();
             return View(data);
 
         }
+
         public async Task<ViewResult> GetBook(int id)
         {
             var bookVM = new BookVM();
@@ -51,6 +54,8 @@ namespace BookStore.Controllers
             return _bookRepository.SearchBook(bookName, authorName);
         }
 
+        [HttpGet]
+        [Route("addnewbook")]
         public async Task<ViewResult> AddNewBook(bool isSuccess = false, int bookId = 0)
         {
 
@@ -61,11 +66,11 @@ namespace BookStore.Controllers
             ViewBag.isSuccess = isSuccess;
             ViewBag.bookId = bookId;
 
-
             return View();
         }
 
         [HttpPost]
+        [Route("addnewbook")]
         public async Task<IActionResult> AddNewBook(BookModel bookModel)
         {
             if (ModelState.IsValid)

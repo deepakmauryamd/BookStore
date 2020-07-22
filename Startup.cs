@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using BookStore.Data;
 using BookStore.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace BookStore
 {
@@ -19,6 +18,24 @@ namespace BookStore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BookStoreContext>();
+
+            services.AddDbContext<AccountContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AccountContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 4;
+                options.Password.RequireNonAlphanumeric=false;
+                options.Password.RequireUppercase=false;
+                options.Password.RequireLowercase=false;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireDigit = false;
+
+            });
+            // services.ConfigureApplicationCookie(option =>{
+            //     option.ExpireTimeSpan = TimeSpan.FromMinutes();
+            // });
+
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddScoped<BookRepository, BookRepository>();
@@ -34,8 +51,10 @@ namespace BookStore
                 app.UseDeveloperExceptionPage();
             }
             app.UseStaticFiles();
-            app.UseRouting();
 
+            app.UseAuthentication();
+
+            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();

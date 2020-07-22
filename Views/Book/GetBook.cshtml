@@ -14,7 +14,7 @@
     @if(@book != null)
     {
         <div class="section mt-5 mb-5">
-            <h3 class="display-4">Book Details</h3>
+            <h3 class="display-5 text-uppercase border-bottom mb-4">Book Details</h3>
             <div class="row">
                 <div class="col-md-6">
                     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -57,7 +57,7 @@
                     </div> 
                     <div class="row">
                         <div class="col-md-12">
-                            <p class="description">@book.Description</p>
+                            <p class="description">@(book.Description == null ? "No description available": book.Description)</p>
                         </div>
                     </div> 
                     <div class="row">
@@ -77,7 +77,7 @@
         @if(similarBooks != null && similarBooks.Any())
         {
             <div class="section mt-5 mb-5">
-                <h3 class="display-4">Similar books</h3>
+                <h3 class="display-5 text-uppercase border-bottom mb-4 pt-lg-5">Similar books</h3>
                 <div class="row">
                    @foreach (var similarBook in similarBooks)
                     {
@@ -86,7 +86,7 @@
                                 <img src="@similarBook.CoverImageUrl" alt="@similarBook.CoverImageUrl" class="img-thumbnail"/>
                                 <div class="card-body">
                                     <h3 class="card-title">@similarBook.Title</h3>
-                                    <p class="card-text">@similarBook.Description...</p>
+                                    <p class="card-text">@(similarBook.Description == null ? "No description available": book.Description)</p>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <a asp-controller="book" asp-action="getbook" asp-route-id="@similarBook.Id" class="btn btn-outline-secondary">View Details</a>
                                         <small class="text-muted">@similarBook.Author</small>
