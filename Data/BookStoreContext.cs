@@ -18,7 +18,7 @@ namespace BookStore.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql("server=localhost;database=BookStore;user=deepak;password=Deepak@123;");
+            optionsBuilder.UseMySql("server=localhost;database=BookStore;user=user;password=password;");
             base.OnConfiguring(optionsBuilder);
         }
     }
@@ -32,7 +32,7 @@ namespace BookStore.Data
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql("server=localhost;database=BookStore;user=deepak;password=Deepak@123;");
+            optionsBuilder.UseMySql("server=localhost;database=BookStore;user=user;password=password;");
             base.OnConfiguring(optionsBuilder);
         }
     }
